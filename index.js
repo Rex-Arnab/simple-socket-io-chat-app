@@ -6,6 +6,7 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 
+const messages = []
 
 app.get('/', (req, res) => {
     res.send('Hello World');
@@ -28,24 +29,28 @@ io.on('connection', (socket) => {
         console.log('User disconnected');
     });
 
-    socket.on('reply', () => { console.log("a reply detected!") });
+    socket.on('reply', () => {
+        console.log("a reply detected!")
+        socket.emit("message", messages)
+    });
 
     // Handle chat message event
     socket.on('message', (msg) => {
         console.log('Message received:', msg);
-        if (msg === 'hi') {
+
+        messages.push(msg)
+
+        if (data === 'hi') {
             io.emit('message', 'Hello!');
-        } else if (msg === 'bye') {
+        } else if (data === 'bye') {
             io.emit('message', 'Goodbye bhai!');
+        } else {
+            io.emit('message', msg)
         }
+
     });
 
-    // make echo event
-    socket.on('echo', (data) => {
-        console.log('Data received:', data);
-        // Emit data back to the client
-        io.emit('echo', data);
-    });
+
 });
 
 const PORT = process.env.PORT || 8080;
